@@ -6,6 +6,7 @@ package br.ifce.ppd.rmi.control;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  *
@@ -13,4 +14,9 @@ import java.rmi.RemoteException;
  */
 public interface InverterItf extends Remote {
     String inverter(String msg) throws RemoteException;
+    
+    void conectar(String login) throws RemoteException;
+    void desconectar(String login) throws RemoteException;
+    
+    List<String> listarLogins() throws RemoteException;
 }

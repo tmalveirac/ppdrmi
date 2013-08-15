@@ -8,24 +8,63 @@ package br.ifce.ppd.rmi.control;
  *
  * @author malveira
  */
-import java.io.*;
 import java.rmi.*;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
-public class Cliente{
-    public static void main(String args[]) { 
+public class Cliente extends UnicastRemoteObject implements ClienteItf {
+    
+    private InverterItf servidor;
+    private String login;
+    
+    
+    public Cliente (String login) throws RemoteException{
+        
         try {
-            InverterItf Inv = 
-            (InverterItf)Naming.lookup("//localhost/InverterRef");
+            servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
             System.out.println("Objeto Localizado!");
-            for(;;) {
-                System.out.print("Digite a Frase:"); 
-                BufferedReader r = new BufferedReader(
-                new InputStreamReader(System.in)); 
-                String line = r.readLine();
-                String retorno = Inv.inverter(line);
-                System.out.println("Frase Invertida = " + retorno); 
-            } 
-        } catch(Exception e){System.err.println("Erro");}
-        System.exit(0);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+       
+        try {
+            Naming.rebind(login,this);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        servidor.conectar(login);
+        
+    }
+
+    public InverterItf getServidor() {
+        return servidor;
+    }
+
+    public void setServidor(InverterItf servidor) {
+        this.servidor = servidor;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+    
+    
+    public String inverterMensagem(String s) throws RemoteException{
+        return servidor.inverter(s);
+    }
+    
+    public List<String> listaLogins() throws RemoteException{
+        return servidor.listarLogins();
+    }
+    
+    public void desconectar() throws RemoteException{
+        servidor.desconectar(this.login);
     }
 }
