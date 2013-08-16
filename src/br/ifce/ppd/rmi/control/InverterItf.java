@@ -18,5 +18,9 @@ public interface InverterItf extends Remote {
     void conectar(String login) throws RemoteException;
     void desconectar(String login) throws RemoteException;
     
+    
+    byte[] downloadArquivo(String nomeArquivo) throws RemoteException;
+               
+    
     List<String> listarLogins() throws RemoteException;
 }

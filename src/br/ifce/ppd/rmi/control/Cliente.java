@@ -8,8 +8,13 @@ package br.ifce.ppd.rmi.control;
  *
  * @author malveira
  */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cliente extends UnicastRemoteObject implements ClienteItf {
@@ -35,6 +40,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
             e.printStackTrace();
         }
         
+        this.login=login;
         servidor.conectar(login);
         
     }
@@ -67,4 +73,38 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     public void desconectar() throws RemoteException{
         servidor.desconectar(this.login);
     }
+
+    @Override
+    public byte[] downloadArquivo(String nomeArquivo) throws RemoteException {
+        try{
+
+    	    File file = new File(nomeArquivo);
+            InputStream inStream;  
+    	    inStream = new FileInputStream(file);
+    	     
+    	    byte[] buffer;
+            buffer = new byte[ (int) file.length() ];
+
+            inStream.read(buffer, 0, buffer.length);          
+            inStream.close();
+            
+            return buffer;
+    	}catch(IOException e){
+    	    e.printStackTrace();
+            return null;
+    	}
+    }
+
+    @Override
+    public List<String> listarArquivos() {
+        File file = new File("/home/malveira/teste/destino");
+        List<String> listaArquivo = new ArrayList<String>();
+
+        for (File f : file.listFiles()){
+            listaArquivo.add(f.getName());
+        }
+        
+        return listaArquivo;
+    }
+    
 }
