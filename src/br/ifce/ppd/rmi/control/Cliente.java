@@ -21,12 +21,15 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     
     private InverterItf servidor;
     private String login;
+    private String nomeServidor;
+    private File pasta;
     
     
-    public Cliente (String login) throws RemoteException{
+    public Cliente (String login, String nomeServidor, File pasta) throws RemoteException{
         
         try {
-            servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
+            //servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
+            servidor = (InverterItf)Naming.lookup("//"+nomeServidor);
             System.out.println("Objeto Localizado!");
             
         } catch (Exception e) {
@@ -39,7 +42,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+        this.pasta=pasta;
         this.login=login;
         servidor.conectar(login);
         
@@ -60,6 +63,24 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     public void setLogin(String login) {
         this.login = login;
     }
+
+    public String getNomeServidor() {
+        return nomeServidor;
+    }
+
+    public void setNomeServidor(String nomeServidor) {
+        this.nomeServidor = nomeServidor;
+    }
+
+    public File getPasta() {
+        return pasta;
+    }
+
+    public void setPasta(File pasta) {
+        this.pasta = pasta;
+    }
+    
+    
     
     
     public String inverterMensagem(String s) throws RemoteException{
@@ -97,11 +118,13 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
 
     @Override
     public List<String> listarArquivos() {
-        File file = new File("/home/malveira/teste/destino");
+        //File file = new File("/home/malveira/teste/destino");
         List<String> listaArquivo = new ArrayList<String>();
 
-        for (File f : file.listFiles()){
-            listaArquivo.add(f.getName());
+        for (File f : pasta.listFiles()){
+            if (!f.isDirectory()){
+                listaArquivo.add(f.getName());
+            }
         }
         
         return listaArquivo;
