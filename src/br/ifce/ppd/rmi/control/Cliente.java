@@ -81,16 +81,6 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     }
     
     
-    
-    
-    public String inverterMensagem(String s) throws RemoteException{
-        return servidor.inverter(s);
-    }
-    
-    public List<String> listaLogins() throws RemoteException{
-        return servidor.listarLogins();
-    }
-    
     public void desconectar() throws RemoteException{
         servidor.desconectar(this.login);
     }

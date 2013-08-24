@@ -4,29 +4,26 @@
  */
 package br.ifce.ppd.rmi.utils;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author malveira
  */
 public class Usuario implements Serializable{
-    private int id;
     private String login;
+    private List<File> listaArquivo;
 
     public Usuario(String login) {
         this.login = login;
     }
 
-    
-    
-    public int getId() {
-        return id;
+    public Usuario() {
+        
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getLogin() {
         return login;
@@ -35,6 +32,13 @@ public class Usuario implements Serializable{
     public void setLogin(String login) {
         this.login = login;
     }
-    
-    
+
+    public List<File> getListaArquivo() {
+        return listaArquivo;
+    }
+
+    public void setListaArquivo(List<File> listaArquivo) {
+        this.listaArquivo = listaArquivo;
+    }
+
 }

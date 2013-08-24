@@ -8,21 +8,26 @@ package br.ifce.ppd.rmi.control;
  *
  * @author malveira
  */
+import br.ifce.ppd.rmi.utils.Usuario;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Servidor extends UnicastRemoteObject implements InverterItf {
     
     // Vetor que armazena os usuários ativos em uma sessão
     private static List<ClienteItf> listaClienteItf = new ArrayList<ClienteItf>();
-    private static List<String> listaLogin =  new ArrayList<String>();
+    private static List<String> listaLogin =  new ArrayList<String>(); //temp
+    private static List<Usuario> listUsuario = new ArrayList<Usuario>();
+    
     
     public Servidor() throws RemoteException{
         super();
@@ -42,11 +47,22 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
         try {
             ClienteItf c = (ClienteItf) Naming.lookup("//localhost/" + login);
             listaClienteItf.add(c);
-            listaLogin.add(login);
+            //listaLogin.add(login);
             
-           for (File s : c.listarArquivos()){
-               System.err.println(s.getName()+",");
-           }
+            Usuario u = new Usuario();
+            u.setLogin(login);
+            List<File> listaArquivo = new ArrayList<File>();
+            
+            for (File s : c.listarArquivos()){
+                System.err.println(s.getName()+",");
+                listaArquivo.add(s);
+            }
+            
+            u.setListaArquivo(listaArquivo);
+            
+            listUsuario.add(u);
+            
+            //TODO: Enviar a lista de arquivos pra todo mundo
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +76,9 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
             if (listaClienteItf.remove(c)) {
                 System.err.println("Removeu objeto Cliente da lista");
             }
-            listaLogin.remove(indiceByLogin(login));
+            //listaLogin.remove(indiceByLogin(login));
+            
+            listUsuario.remove(indiceByLogin(login));
             Naming.unbind("//localhost/" + login);
         
         } catch (Exception e) {
@@ -72,16 +90,16 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
     }
 
     @Override
-    public List<String> listarLogins() throws RemoteException {   
-       return listaLogin;
+    public List<Usuario> listarUsuarios() throws RemoteException {   
+       return listUsuario;
     }
     
     
     public static int indiceByLogin (String login){		
 	int indice = -1;	
-        for (String s : listaLogin){
+        for (Usuario u : listUsuario){
             indice++;
-            if (s.equals(login)){
+            if (u.getLogin().equals(login)){
                     return indice;
             }
         }		
@@ -108,5 +126,14 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
             return null;
     	}
     }
-    
+
+    @Override
+    public void atualizarPasta(String login) throws RemoteException {
+        try {
+            ClienteItf c = (ClienteItf) Naming.lookup("//localhost/" + login);
+            listUsuario.get(indiceByLogin(login)).setListaArquivo(c.listarArquivos());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
