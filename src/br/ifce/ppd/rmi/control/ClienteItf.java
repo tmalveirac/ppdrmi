@@ -4,6 +4,7 @@
  */
 package br.ifce.ppd.rmi.control;
 
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -15,6 +16,6 @@ import java.util.List;
 public interface ClienteItf extends Remote{
     
     byte[] downloadArquivo(String nomeArquivo) throws RemoteException; 
-    List<String> listarArquivos() throws RemoteException;
+    List<File> listarArquivos() throws RemoteException;
     
 }

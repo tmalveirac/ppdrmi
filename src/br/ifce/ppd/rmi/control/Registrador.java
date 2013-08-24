@@ -23,6 +23,7 @@ public class Registrador {
         } 
         catch (Exception e){ 
             System.out.println("Erro");
+            e.printStackTrace();
         }
     }
 }

@@ -4,8 +4,9 @@
  */
 package br.ifce.ppd.rmi.view;
 
-import br.ifce.ppd.rmi.utils.SortIgnoreCase;
+import br.ifce.ppd.rmi.utils.SortStringIgnoreCase;
 import br.ifce.ppd.rmi.control.Cliente;
+import br.ifce.ppd.rmi.utils.SortFileIgnoreCase;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -13,8 +14,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
 
 
 
@@ -55,10 +59,10 @@ public class Principal extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         txtMinhaPasta = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listMinhaPasta = new javax.swing.JList();
         btnAtualizarMinhaPasta = new javax.swing.JButton();
         btnAlterarPasta = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblMinhaPasta = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         listDownload = new javax.swing.JList();
@@ -89,7 +93,7 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(57, 57, 57)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 645, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -106,13 +110,6 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel2.setText("Pasta:");
 
-        listMinhaPasta.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(listMinhaPasta);
-
         btnAtualizarMinhaPasta.setText("Atualizar");
         btnAtualizarMinhaPasta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,6 +124,34 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        tblMinhaPasta.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Arquivo", "Tamanho (Bytes)", "Usuário"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Long.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblMinhaPasta);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -138,14 +163,14 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(77, 77, 77)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 611, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(39, 39, 39)
                         .addComponent(txtMinhaPasta, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
-                        .addComponent(btnAlterarPasta))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 620, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(52, Short.MAX_VALUE))
+                        .addComponent(btnAlterarPasta)))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,9 +180,9 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(txtMinhaPasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(btnAlterarPasta))
+                .addGap(37, 37, 37)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addComponent(btnAtualizarMinhaPasta)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
@@ -178,7 +203,7 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(73, 73, 73)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,7 +236,7 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(313, 313, 313)
                         .addComponent(btnBaixar, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,11 +300,19 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAtualizarMinhaPastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarMinhaPastaActionPerformed
-        listaArquivosMinhaPasta();
+        try {
+            listaArquivosMinhaPasta();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnAtualizarMinhaPastaActionPerformed
 
     private void jMenuAlterarPastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAlterarPastaActionPerformed
-        alterarPasta();
+        try {
+            alterarPasta();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_jMenuAlterarPastaActionPerformed
 
@@ -288,11 +321,11 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuSairActionPerformed
 
     private void btnAlterarPastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarPastaActionPerformed
-        jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        jFileChooser.showOpenDialog(this);
-        cliente.setPasta(jFileChooser.getSelectedFile());
-        listaArquivosMinhaPasta();
-        txtMinhaPasta.setText(jFileChooser.getSelectedFile().toString());
+        try {
+            alterarPasta();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnAlterarPastaActionPerformed
 
     
@@ -366,9 +399,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JList listDownload;
-    private javax.swing.JList listMinhaPasta;
     private javax.swing.JList listResultadoBusca;
     private javax.swing.JList listTodosArquivos;
+    private javax.swing.JTable tblMinhaPasta;
     private javax.swing.JTextField txtBuscaArquivo;
     private javax.swing.JTextField txtMinhaPasta;
     // End of variables declaration//GEN-END:variables
@@ -377,7 +410,7 @@ public class Principal extends javax.swing.JFrame {
     
     //Model utilizado para atualizar lista de logins na tela
     private static DefaultListModel  listModel = new DefaultListModel(); 
-
+/*
     private void listaArquivosMinhaPasta() {
         List<String> listaOrdenada = cliente.listarArquivos();
         
@@ -390,10 +423,29 @@ public class Principal extends javax.swing.JFrame {
         //Popula lista
         for (String s : listaOrdenada){
                 listModel.addElement(s);
-                listMinhaPasta.setModel(listModel);
+                //listMinhaPasta.setModel(listModel);
         }
     }
+  */  
     
+    public void listaArquivosMinhaPasta() throws RemoteException {
+        List<File> listaArquivos = cliente.listarArquivos();
+        
+        //List<String> listaOrdenada = new ArrayList<String>();
+        
+        Collections.sort(listaArquivos,new SortFileIgnoreCase());
+        
+        DefaultTableModel dtm = (DefaultTableModel) tblMinhaPasta.getModel();
+        for (int i=0;i<dtm.getRowCount();){
+            dtm.removeRow(i);
+        }
+        //listModel.removeAllElements();
+        
+        //Popula lista
+        for (File f : listaArquivos){
+            dtm.addRow(new Object[]{f.getName(),f.length(),"Teste"});        
+        }
+    }
     
     
      /**
@@ -411,12 +463,13 @@ public class Principal extends javax.swing.JFrame {
         }
         return -1;
     }
-    
-    public void alterarPasta(){
+   
+    public void alterarPasta() throws RemoteException{
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         jFileChooser.showOpenDialog(this);
         cliente.setPasta(jFileChooser.getSelectedFile());
         txtMinhaPasta.setText(jFileChooser.getSelectedFile().toString());
         listaArquivosMinhaPasta();
     }
+
 }

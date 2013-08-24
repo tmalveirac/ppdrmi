@@ -117,13 +117,13 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     }
 
     @Override
-    public List<String> listarArquivos() {
+    public List<File> listarArquivos() throws RemoteException {
         //File file = new File("/home/malveira/teste/destino");
-        List<String> listaArquivo = new ArrayList<String>();
+        List<File> listaArquivo = new ArrayList<File>();
 
         for (File f : pasta.listFiles()){
             if (!f.isDirectory()){
-                listaArquivo.add(f.getName());
+                listaArquivo.add(f);
             }
         }
         

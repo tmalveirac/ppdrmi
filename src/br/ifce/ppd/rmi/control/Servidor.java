@@ -44,8 +44,8 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
             listaClienteItf.add(c);
             listaLogin.add(login);
             
-           for (String s : c.listarArquivos()){
-               System.err.println(s+",");
+           for (File s : c.listarArquivos()){
+               System.err.println(s.getName()+",");
            }
             
         } catch (Exception e) {
