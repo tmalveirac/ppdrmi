@@ -43,6 +43,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
             e.printStackTrace();
         }
         this.pasta=pasta;
+        this.nomeServidor=nomeServidor;
         this.login=login;
         servidor.conectar(login);
         
@@ -89,7 +90,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     public byte[] downloadArquivo(String nomeArquivo) throws RemoteException {
         try{
 
-    	    File file = new File(nomeArquivo);
+    	    File file = new File(this.pasta.getPath()+"/"+nomeArquivo);
             InputStream inStream;  
     	    inStream = new FileInputStream(file);
     	     
@@ -118,6 +119,20 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         }
         
         return listaArquivo;
+    }
+    
+    
+    public byte[] downloadArquivoOutroUsuario(String login, String nomeArquivo) {
+        try{
+            String campos[] = this.nomeServidor.split("/"); //Extrair endereço do servidor
+            
+    	    ClienteItf clienteItf = (ClienteItf) Naming.lookup("//"+campos[0]+"/"+login); 
+            return clienteItf.downloadArquivo(nomeArquivo);
+            
+    	}catch(Exception e){
+    	    e.printStackTrace();
+            return null;
+    	}
     }
     
 }

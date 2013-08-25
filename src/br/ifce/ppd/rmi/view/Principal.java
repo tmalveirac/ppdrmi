@@ -4,24 +4,24 @@
  */
 package br.ifce.ppd.rmi.view;
 
-import br.ifce.ppd.rmi.utils.SortStringIgnoreCase;
 import br.ifce.ppd.rmi.control.Cliente;
-import br.ifce.ppd.rmi.control.Servidor;
+import br.ifce.ppd.rmi.utils.Abas;
 import br.ifce.ppd.rmi.utils.SortFileIgnoreCase;
 import br.ifce.ppd.rmi.utils.Usuario;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import org.omg.PortableServer.LifespanPolicy;
 
 
 
@@ -41,8 +41,9 @@ public class Principal extends javax.swing.JFrame {
         cliente = new Cliente(login, servidor, pasta);
         
         txtMinhaPasta.setText(pasta.getPath());
-        
-        listaArquivosMinhaPasta();
+     
+        listarArquivos(Abas.MINHA_PASTA);
+        listarArquivos(Abas.TODOS_ARQUIVOS);
         setVisible(true);
     }
 
@@ -55,6 +56,7 @@ public class Principal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        rbtgNomeExtensao = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -67,28 +69,32 @@ public class Principal extends javax.swing.JFrame {
         btnAlterarPasta = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMinhaPasta = new javax.swing.JTable();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        listDownload = new javax.swing.JList();
         jPanel4 = new javax.swing.JPanel();
+        btnFazerDownloadRB = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tbResultadoBusca = new javax.swing.JTable();
+        lbTextoResultado = new javax.swing.JLabel();
+        lbQtdResultado = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        listResultadoBusca = new javax.swing.JList();
-        btnBaixar = new javax.swing.JButton();
+        jTable1 = new javax.swing.JTable();
         txtBuscaArquivo = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
+        lbBuscarArquivo = new javax.swing.JLabel();
+        rbtNome = new javax.swing.JRadioButton();
+        rbtExtensao = new javax.swing.JRadioButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuAlterarPasta = new javax.swing.JMenuItem();
         jMenuSair = new javax.swing.JMenuItem();
 
+        rbtgNomeExtensao.add(rbtNome);
+        rbtgNomeExtensao.add(rbtExtensao);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tblTodosArquivos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Arquivo", "Tamanho (Bytes)", "Cliente"
@@ -123,7 +129,7 @@ public class Principal extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(320, 320, 320)
                         .addComponent(btnAtualizarTodoArquivos)))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,7 +144,6 @@ public class Principal extends javax.swing.JFrame {
         jTabbedPane1.addTab("Todos os Arquivos", jPanel1);
 
         txtMinhaPasta.setEditable(false);
-        txtMinhaPasta.setText("jTextField2");
 
         jLabel2.setText("Pasta:");
 
@@ -158,10 +163,7 @@ public class Principal extends javax.swing.JFrame {
 
         tblMinhaPasta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Arquivo", "Tamanho (Bytes)", "Usuário"
@@ -202,7 +204,7 @@ public class Principal extends javax.swing.JFrame {
                         .addComponent(txtMinhaPasta, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
                         .addComponent(btnAlterarPasta)))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,48 +215,49 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(btnAlterarPasta))
                 .addGap(37, 37, 37)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnAtualizarMinhaPasta)
                 .addContainerGap(41, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Minha Pasta", jPanel2);
 
-        listDownload.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        btnFazerDownloadRB.setText("Download");
+        btnFazerDownloadRB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFazerDownloadRBActionPerformed(evt);
+            }
         });
-        jScrollPane3.setViewportView(listDownload);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(73, 73, 73)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(77, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
-        );
+        tbResultadoBusca.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        jTabbedPane1.addTab("Download", jPanel3);
+            },
+            new String [] {
+                "Arquivo", "Tamanho (Bytes)", "Cliente"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Long.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
 
-        listResultadoBusca.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
-        jScrollPane2.setViewportView(listResultadoBusca);
+        jScrollPane4.setViewportView(tbResultadoBusca);
 
-        btnBaixar.setText("Baixar");
+        lbTextoResultado.setText("Quantidade de arquivos encontrados: ");
+
+        lbQtdResultado.setText("___");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -263,26 +266,83 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 683, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(313, 313, 313)
-                        .addComponent(btnBaixar, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(49, Short.MAX_VALUE))
+                        .addGap(281, 281, 281)
+                        .addComponent(btnFazerDownloadRB, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(199, 199, 199)
+                        .addComponent(lbTextoResultado)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbQtdResultado)))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnBaixar)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbTextoResultado)
+                    .addComponent(lbQtdResultado))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(btnFazerDownloadRB)
+                .addContainerGap(59, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Resultado de Busca", jPanel4);
 
-        jLabel1.setText("Buscar Arquivo:");
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Arquivo", "Tamanho (Bytes)", "Cliente", "Status"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(54, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(141, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Download", jPanel3);
+
+        txtBuscaArquivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBuscaArquivoActionPerformed(evt);
+            }
+        });
+
+        lbBuscarArquivo.setText("Buscar Arquivo:");
+
+        rbtNome.setText("nome");
+        rbtNome.setSelected(true);
+
+        rbtExtensao.setText("extensão");
 
         jMenu1.setText("Arquivo");
 
@@ -310,21 +370,27 @@ public class Principal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(lbBuscarArquivo)
                 .addGap(18, 18, 18)
-                .addComponent(txtBuscaArquivo, javax.swing.GroupLayout.PREFERRED_SIZE, 435, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(68, 68, 68))
+                .addComponent(txtBuscaArquivo, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbtNome)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rbtExtensao)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtBuscaArquivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                    .addComponent(lbBuscarArquivo)
+                    .addComponent(rbtNome)
+                    .addComponent(rbtExtensao))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -333,7 +399,8 @@ public class Principal extends javax.swing.JFrame {
 
     private void btnAtualizarMinhaPastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarMinhaPastaActionPerformed
         try {
-            listaArquivosMinhaPasta();
+            listarArquivos(Abas.MINHA_PASTA);
+            listarArquivos(Abas.TODOS_ARQUIVOS);
         } catch (RemoteException ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -362,13 +429,46 @@ public class Principal extends javax.swing.JFrame {
 
     private void btnAtualizarTodoArquivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarTodoArquivosActionPerformed
         try {
-            listaArquivosTodos();
+            listarArquivos(Abas.TODOS_ARQUIVOS);
         } catch (RemoteException ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAtualizarTodoArquivosActionPerformed
 
-    
+    private void txtBuscaArquivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscaArquivoActionPerformed
+        try {
+            //Pesquisar na lista de arquivos do servidor
+            //Se for nome
+            if (txtBuscaArquivo.getText().length()<2){
+                JOptionPane.showMessageDialog(null,
+                "Informe pelo menos 2 caracteres para a busca!",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            if (rbtNome.isSelected()){
+                buscaArquivosServidor(txtBuscaArquivo.getText(), "nome");
+            }
+            else {
+                //Se for extensão
+                buscaArquivosServidor(txtBuscaArquivo.getText(), "extensão");
+            }
+            
+            //Selecionar aba de resultado
+            jTabbedPane1.setSelectedComponent(jPanel4);
+        } catch (RemoteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_txtBuscaArquivoActionPerformed
+
+    private void btnFazerDownloadRBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFazerDownloadRBActionPerformed
+        int linhaSelecionada = tbResultadoBusca.getSelectedRow();
+        String login = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 2);
+        String nomeArquivo = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 0);
+        baixarArquivo(login, nomeArquivo);
+    }//GEN-LAST:event_btnFazerDownloadRBActionPerformed
     
     /**
     * Código para Tratar evento Fechar Janela pelo X 
@@ -418,13 +518,11 @@ public class Principal extends javax.swing.JFrame {
     }
     
     
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlterarPasta;
     private javax.swing.JButton btnAtualizarMinhaPasta;
     private javax.swing.JButton btnAtualizarTodoArquivos;
-    private javax.swing.JButton btnBaixar;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton btnFazerDownloadRB;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuAlterarPasta;
@@ -436,11 +534,17 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JList listDownload;
-    private javax.swing.JList listResultadoBusca;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel lbBuscarArquivo;
+    private javax.swing.JLabel lbQtdResultado;
+    private javax.swing.JLabel lbTextoResultado;
+    private javax.swing.JRadioButton rbtExtensao;
+    private javax.swing.JRadioButton rbtNome;
+    private javax.swing.ButtonGroup rbtgNomeExtensao;
+    private javax.swing.JTable tbResultadoBusca;
     private javax.swing.JTable tblMinhaPasta;
     private javax.swing.JTable tblTodosArquivos;
     private javax.swing.JTextField txtBuscaArquivo;
@@ -449,79 +553,130 @@ public class Principal extends javax.swing.JFrame {
     private JFileChooser jFileChooser;
     private Cliente cliente;
     
-    //Model utilizado para atualizar lista de logins na tela
-    private static DefaultListModel  listModel = new DefaultListModel(); 
-/*
-    private void listaArquivosMinhaPasta() {
-        List<String> listaOrdenada = cliente.listarArquivos();
-        
-        
-        
-        Collections.sort(listaOrdenada,new SortIgnoreCase());
-        
-        listModel.removeAllElements();
-        
-        //Popula lista
-        for (String s : listaOrdenada){
-                listModel.addElement(s);
-                //listMinhaPasta.setModel(listModel);
-        }
-    }
-  */  
     
-    public void listaArquivosMinhaPasta() throws RemoteException {
-        List<File> listaArquivos = cliente.listarArquivos();
-        
-        //List<String> listaOrdenada = new ArrayList<String>();
-        
-        Collections.sort(listaArquivos,new SortFileIgnoreCase());
-        
-        DefaultTableModel dtm = (DefaultTableModel) tblMinhaPasta.getModel();
-        for (int i=0;i<dtm.getRowCount();){
-            dtm.removeRow(i);
-        }
-        //listModel.removeAllElements();
-        
-        //Popula lista
-        for (File f : listaArquivos){
-            dtm.addRow(new Object[]{f.getName(),f.length(),"Teste"});        
-        }
-    }
-    
-   
     public void alterarPasta() throws RemoteException{
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         jFileChooser.showOpenDialog(this);
         cliente.setPasta(jFileChooser.getSelectedFile());
-        txtMinhaPasta.setText(jFileChooser.getSelectedFile().toString());
-        listaArquivosMinhaPasta();
+        txtMinhaPasta.setText(jFileChooser.getSelectedFile().getPath());
+        listarArquivos(Abas.MINHA_PASTA);
+        listarArquivos(Abas.TODOS_ARQUIVOS);
         cliente.getServidor().atualizarPasta(cliente.getLogin());
     }
+ 
+    //Método genérico para atualizar conteúdo da tabela
+    public void listarArquivos(String tipoLista) throws RemoteException{
 
-    
-     public void listaArquivosTodos() throws RemoteException {
-        //List<File> listaArquivos = cliente.listarArquivos();
+        DefaultTableModel dtm;
         
-        //List<String> listaOrdenada = new ArrayList<String>();
+        
+        switch (tipoLista){
+
+            case Abas.MINHA_PASTA:
+                List<File> listaArquivos =  cliente.listarArquivos();
+       
+                //Ordenando arquivos
+                Collections.sort(listaArquivos,new SortFileIgnoreCase());
+
+                dtm = (DefaultTableModel) tblMinhaPasta.getModel();
+                for (int i=0;i<dtm.getRowCount();){
+                    dtm.removeRow(i);
+                }
+
+                //Popula lista
+                for (File f : listaArquivos){
+                    dtm.addRow(new Object[]{f.getName(),f.length(),cliente.getLogin()});        
+                }
+                break;
+                
+            case Abas.TODOS_ARQUIVOS:
+                List<Usuario> listaUsuario = cliente.getServidor().listarUsuarios();
+        
+                //Copia a lista de arquivos de todo
+                System.err.println("Tamanho da lista de Arquivos" + listaUsuario.size());
+
+                dtm = (DefaultTableModel) tblTodosArquivos.getModel();
+                for (int i=0;i<dtm.getRowCount();){
+                    dtm.removeRow(i);
+                }
+
+                //Popula lista
+                for (Usuario u : listaUsuario){
+                    for (File f : u.getListaArquivo()){
+                        dtm.addRow(new Object[]{f.getName(),f.length(), u.getLogin()});  
+                    }
+                }
+                break;
+                
+            case Abas.BUSCA_ARQUIVOS:
+                
+                
+        }
+        
+        
+    } 
+
+    public void buscaArquivosServidor(String palavraChave, String tipoBusca) throws RemoteException {
         List<Usuario> listaUsuario = cliente.getServidor().listarUsuarios();
+        DefaultTableModel dtm;
+        
+        String[] listaPalavra = palavraChave.split(" ");
+        int qtdPalavra = listaPalavra.length;
         
         //Copia a lista de arquivos de todo
-        
-         System.err.println("Tamanho da lista de Arquivos" + listaUsuario.size());
-        
-        //Collections.sort(listaArquivos,new SortFileIgnoreCase());
-        
-        DefaultTableModel dtm = (DefaultTableModel) tblTodosArquivos.getModel();
+        System.err.println("Tamanho da lista de Arquivos" + listaUsuario.size());
+        dtm = (DefaultTableModel) tbResultadoBusca.getModel();
         for (int i=0;i<dtm.getRowCount();){
             dtm.removeRow(i);
         }
-        //listModel.removeAllElements();
-        
-        //Popula lista
+
+        //Compara as strings Popula lista de resultado
         for (Usuario u : listaUsuario){
+            //Não pesquisa nos meus arquivos
+            if (u.getLogin().equals(cliente.getLogin())){
+                continue;
+            }
             for (File f : u.getListaArquivo()){
-                dtm.addRow(new Object[]{f.getName(),f.length(), u.getLogin()});        
+                for (String s : listaPalavra){
+                    //Busca conforme o tipo
+                    if (tipoBusca.equals("nome")){       
+                        //Retira 3 últimos nomes
+                        if (f.getName().substring(0, f.getName().length()-3).toLowerCase().contains(s.toLowerCase())){
+                            dtm.addRow(new Object[]{f.getName(),f.length(), u.getLogin()});      
+                            break;
+                        }
+                    }
+                    else{
+                        //Busca por extensão
+                        if (f.getName().toLowerCase().endsWith("."+s.toLowerCase())){
+                            dtm.addRow(new Object[]{f.getName(),f.length(), u.getLogin()});      
+                            break;
+                        }
+                    }
+                    
+                }           
             }
         }
+        
+        //Informa quantidade de resultados:
+        lbQtdResultado.setText(""+dtm.getRowCount());
+      
     }
+
+    public void baixarArquivo(String login, String nomeArquivo) {
+        try {
+            File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
+            
+            OutputStream outStream = null;
+            outStream = new FileOutputStream(file);
+
+            outStream.write(cliente.downloadArquivoOutroUsuario(login, nomeArquivo), 0, 
+                    cliente.downloadArquivoOutroUsuario(login, nomeArquivo).length);
+
+            outStream.close();
+        } catch (Exception ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+     
 }
