@@ -133,4 +133,17 @@ public class Servidor extends UnicastRemoteObject implements InverterItf {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean existeLogin(String login) throws RemoteException {
+        for (Usuario u : listUsuario){
+            if(u.getLogin().equals(login)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
 }

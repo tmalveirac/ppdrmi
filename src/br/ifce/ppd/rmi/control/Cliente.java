@@ -16,6 +16,7 @@ import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 public class Cliente extends UnicastRemoteObject implements ClienteItf {
     
@@ -37,16 +38,23 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         }
        
         try {
-            Naming.rebind(login,this);
-            
+            if (!servidor.existeLogin(login)){
+                Naming.rebind(login,this); 
+            }
+            else{
+                JOptionPane.showMessageDialog(null,	"Já existe um usuário com este login conectado! Reinicie o programa!",
+					"Atenção", JOptionPane.WARNING_MESSAGE);
+                System.exit(0);
+            }
+                             
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         this.pasta=pasta;
         this.nomeServidor=nomeServidor;
         this.login=login;
-        servidor.conectar(login);
-        
+        servidor.conectar(login);       
     }
 
     public InverterItf getServidor() {
@@ -122,7 +130,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     }
     
     
-    public byte[] downloadArquivoOutroUsuario(String login, String nomeArquivo) {
+    public byte[] downloadArquivoOutroUsuario(String login, String nomeArquivo) throws RemoteException{
         try{
             String campos[] = this.nomeServidor.split("/"); //Extrair endereço do servidor
             

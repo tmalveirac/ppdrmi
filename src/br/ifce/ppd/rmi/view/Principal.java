@@ -11,7 +11,6 @@ import br.ifce.ppd.rmi.utils.Usuario;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
@@ -416,6 +415,11 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuAlterarPastaActionPerformed
 
     private void jMenuSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuSairActionPerformed
+        try {
+            cliente.getServidor().desconectar(cliente.getLogin());
+        } catch (RemoteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.exit(0);
     }//GEN-LAST:event_jMenuSairActionPerformed
 
@@ -486,7 +490,11 @@ public class Principal extends javax.swing.JFrame {
             @Override
             public void windowClosing(WindowEvent we) {
             if (we.getID() == WindowEvent.WINDOW_CLOSING) {
-                //sair();
+                try {
+                    cliente.getServidor().desconectar(cliente.getLogin());
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             }
 
@@ -664,8 +672,9 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public void baixarArquivo(String login, String nomeArquivo) {
+         File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
         try {
-            File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
+            //File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
             
             OutputStream outStream = null;
             outStream = new FileOutputStream(file);
@@ -675,8 +684,17 @@ public class Principal extends javax.swing.JFrame {
 
             outStream.close();
         } catch (Exception ex) {
+            
+            file.delete();
+            JOptionPane.showMessageDialog(null,
+                "O arquivo não está mais disponível. Refaça a busca!",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE);
+            jTabbedPane1.setSelectedComponent(jPanel1);
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
     }
      
 }
