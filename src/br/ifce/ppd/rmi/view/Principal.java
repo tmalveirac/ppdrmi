@@ -76,7 +76,8 @@ public class Principal extends javax.swing.JFrame {
         lbQtdResultado = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbDownloads = new javax.swing.JTable();
+        btnLimparDownloads = new javax.swing.JButton();
         txtBuscaArquivo = new javax.swing.JTextField();
         lbBuscarArquivo = new javax.swing.JLabel();
         rbtNome = new javax.swing.JRadioButton();
@@ -268,13 +269,13 @@ public class Principal extends javax.swing.JFrame {
                         .addGap(32, 32, 32)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 683, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(281, 281, 281)
-                        .addComponent(btnFazerDownloadRB, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(199, 199, 199)
                         .addComponent(lbTextoResultado)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbQtdResultado)))
+                        .addComponent(lbQtdResultado))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(283, 283, 283)
+                        .addComponent(btnFazerDownloadRB, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -286,14 +287,14 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(lbQtdResultado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
+                .addGap(26, 26, 26)
                 .addComponent(btnFazerDownloadRB)
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Resultado de Busca", jPanel4);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbDownloads.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -309,15 +310,27 @@ public class Principal extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane2.setViewportView(tbDownloads);
+
+        btnLimparDownloads.setText("Limpar Downloads");
+        btnLimparDownloads.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparDownloadsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 648, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(297, 297, 297)
+                        .addComponent(btnLimparDownloads)))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -325,7 +338,9 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(53, 53, 53)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(141, Short.MAX_VALUE))
+                .addGap(43, 43, 43)
+                .addComponent(btnLimparDownloads)
+                .addContainerGap(68, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Download", jPanel3);
@@ -389,7 +404,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(lbBuscarArquivo)
                     .addComponent(rbtNome)
                     .addComponent(rbtExtensao))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -471,8 +486,16 @@ public class Principal extends javax.swing.JFrame {
         int linhaSelecionada = tbResultadoBusca.getSelectedRow();
         String login = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 2);
         String nomeArquivo = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 0);
-        baixarArquivo(login, nomeArquivo);
+        if(baixarArquivo(login, nomeArquivo)){
+            
+        }
+        listarArquivoDownload(login,nomeArquivo);
+        jTabbedPane1.setSelectedComponent(jPanel3);
     }//GEN-LAST:event_btnFazerDownloadRBActionPerformed
+
+    private void btnLimparDownloadsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparDownloadsActionPerformed
+        limparListaDownload();
+    }//GEN-LAST:event_btnLimparDownloadsActionPerformed
     
     /**
     * Código para Tratar evento Fechar Janela pelo X 
@@ -531,6 +554,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnAtualizarMinhaPasta;
     private javax.swing.JButton btnAtualizarTodoArquivos;
     private javax.swing.JButton btnFazerDownloadRB;
+    private javax.swing.JButton btnLimparDownloads;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuAlterarPasta;
@@ -545,13 +569,13 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbBuscarArquivo;
     private javax.swing.JLabel lbQtdResultado;
     private javax.swing.JLabel lbTextoResultado;
     private javax.swing.JRadioButton rbtExtensao;
     private javax.swing.JRadioButton rbtNome;
     private javax.swing.ButtonGroup rbtgNomeExtensao;
+    private javax.swing.JTable tbDownloads;
     private javax.swing.JTable tbResultadoBusca;
     private javax.swing.JTable tblMinhaPasta;
     private javax.swing.JTable tblTodosArquivos;
@@ -670,8 +694,25 @@ public class Principal extends javax.swing.JFrame {
         lbQtdResultado.setText(""+dtm.getRowCount());
       
     }
-
-    public void baixarArquivo(String login, String nomeArquivo) {
+    
+    
+    public void listarArquivoDownload(String login, String nomeArquivo){
+        try {
+            DefaultTableModel dtm = (DefaultTableModel) tbDownloads.getModel();
+             List<File> listaArquivos =  cliente.listarArquivos();
+             
+             for (File f : listaArquivos){
+                 if (f.getName().equals(nomeArquivo)){
+                    //Popula lista
+                    dtm.addRow(new Object[]{f.getName(),f.length(),login,"Completo"});      
+                 }
+             }
+        } catch (Exception ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }  
+    }
+    
+    public boolean baixarArquivo(String login, String nomeArquivo) {
          File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
         try {
             //File file = new File(cliente.getPasta().getPath()+"/" +nomeArquivo);
@@ -683,6 +724,7 @@ public class Principal extends javax.swing.JFrame {
                     cliente.downloadArquivoOutroUsuario(login, nomeArquivo).length);
 
             outStream.close();
+            return true;
         } catch (Exception ex) {
             
             file.delete();
@@ -692,9 +734,17 @@ public class Principal extends javax.swing.JFrame {
                 JOptionPane.WARNING_MESSAGE);
             jTabbedPane1.setSelectedComponent(jPanel1);
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
         
         
+    }
+
+    public void limparListaDownload() {
+        DefaultTableModel dtm = (DefaultTableModel) tbDownloads.getModel();
+        for (int i=0;i<dtm.getRowCount();){
+            dtm.removeRow(i);
+        }
     }
      
 }
