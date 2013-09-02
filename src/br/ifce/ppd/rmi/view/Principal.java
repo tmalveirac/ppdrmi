@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -37,7 +38,17 @@ public class Principal extends javax.swing.JFrame {
         initComponents();
         inicializar();
         jFileChooser = new JFileChooser();
-        cliente = new Cliente(login, servidor, pasta);
+        try{
+            cliente = new Cliente(login, servidor, pasta);
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(null,
+                "Servidor Indisponível. Tente novamente!",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE);
+            System.exit(0);
+        }
+       
         
         txtMinhaPasta.setText(pasta.getPath());
      
@@ -230,6 +241,7 @@ public class Principal extends javax.swing.JFrame {
             }
         });
 
+        tbResultadoBusca.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbResultadoBusca.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -404,7 +416,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(lbBuscarArquivo)
                     .addComponent(rbtNome)
                     .addComponent(rbtExtensao))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -416,6 +428,7 @@ public class Principal extends javax.swing.JFrame {
             listarArquivos(Abas.MINHA_PASTA);
             listarArquivos(Abas.TODOS_ARQUIVOS);
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAtualizarMinhaPastaActionPerformed
@@ -424,6 +437,7 @@ public class Principal extends javax.swing.JFrame {
         try {
             alterarPasta();
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -433,6 +447,7 @@ public class Principal extends javax.swing.JFrame {
         try {
             cliente.getServidor().desconectar(cliente.getLogin());
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.exit(0);
@@ -442,6 +457,7 @@ public class Principal extends javax.swing.JFrame {
         try {
             alterarPasta();
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAlterarPastaActionPerformed
@@ -450,6 +466,7 @@ public class Principal extends javax.swing.JFrame {
         try {
             listarArquivos(Abas.TODOS_ARQUIVOS);
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnAtualizarTodoArquivosActionPerformed
@@ -477,20 +494,36 @@ public class Principal extends javax.swing.JFrame {
             //Selecionar aba de resultado
             jTabbedPane1.setSelectedComponent(jPanel4);
         } catch (RemoteException ex) {
+            sair();
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }//GEN-LAST:event_txtBuscaArquivoActionPerformed
 
     private void btnFazerDownloadRBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFazerDownloadRBActionPerformed
-        int linhaSelecionada = tbResultadoBusca.getSelectedRow();
-        String login = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 2);
-        String nomeArquivo = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 0);
-        if(baixarArquivo(login, nomeArquivo)){
-            
+        try {
+            int linhaSelecionada = tbResultadoBusca.getSelectedRow();
+            System.err.println("linha= " + linhaSelecionada);
+            if (linhaSelecionada == -1){
+                JOptionPane.showMessageDialog(null,
+                "Selecione uma linha válida!",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE);
+            }
+            else{
+                String login = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 2);
+            String nomeArquivo = (String) tbResultadoBusca.getValueAt(linhaSelecionada, 0);
+            if(baixarArquivo(login, nomeArquivo)){
+                //Se houve problema durante o download
+                
+            }
+            listarArquivoDownload(login,nomeArquivo);
+            jTabbedPane1.setSelectedComponent(jPanel3);
+            }
+        } catch (RemoteException ex) {
+            sair();
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
-        listarArquivoDownload(login,nomeArquivo);
-        jTabbedPane1.setSelectedComponent(jPanel3);
     }//GEN-LAST:event_btnFazerDownloadRBActionPerformed
 
     private void btnLimparDownloadsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparDownloadsActionPerformed
@@ -589,11 +622,13 @@ public class Principal extends javax.swing.JFrame {
     public void alterarPasta() throws RemoteException{
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         jFileChooser.showOpenDialog(this);
-        cliente.setPasta(jFileChooser.getSelectedFile());
-        txtMinhaPasta.setText(jFileChooser.getSelectedFile().getPath());
-        listarArquivos(Abas.MINHA_PASTA);
-        listarArquivos(Abas.TODOS_ARQUIVOS);
-        cliente.getServidor().atualizarPasta(cliente.getLogin());
+        if (jFileChooser.getSelectedFile() != null){
+            cliente.setPasta(jFileChooser.getSelectedFile());
+            txtMinhaPasta.setText(jFileChooser.getSelectedFile().getPath());
+            listarArquivos(Abas.MINHA_PASTA);
+            listarArquivos(Abas.TODOS_ARQUIVOS);
+            cliente.getServidor().atualizarPasta(cliente.getLogin());
+        }
     }
  
     //Método genérico para atualizar conteúdo da tabela
@@ -696,20 +731,18 @@ public class Principal extends javax.swing.JFrame {
     }
     
     
-    public void listarArquivoDownload(String login, String nomeArquivo){
-        try {
-            DefaultTableModel dtm = (DefaultTableModel) tbDownloads.getModel();
-             List<File> listaArquivos =  cliente.listarArquivos();
-             
-             for (File f : listaArquivos){
-                 if (f.getName().equals(nomeArquivo)){
-                    //Popula lista
-                    dtm.addRow(new Object[]{f.getName(),f.length(),login,"Completo"});      
-                 }
+    public void listarArquivoDownload(String login, String nomeArquivo) throws RemoteException{
+        
+        DefaultTableModel dtm = (DefaultTableModel) tbDownloads.getModel();
+        List<File> listaArquivos =  cliente.listarArquivos();
+
+         for (File f : listaArquivos){
+             if (f.getName().equals(nomeArquivo)){
+                //Popula lista
+                dtm.addRow(new Object[]{f.getName(),f.length(),login,"Completo"});      
              }
-        } catch (Exception ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-        }  
+         }
+          
     }
     
     public boolean baixarArquivo(String login, String nomeArquivo) {
@@ -726,14 +759,12 @@ public class Principal extends javax.swing.JFrame {
             outStream.close();
             return true;
         } catch (Exception ex) {
-            
             file.delete();
             JOptionPane.showMessageDialog(null,
                 "O arquivo não está mais disponível. Refaça a busca!",
                 "Atenção",
                 JOptionPane.WARNING_MESSAGE);
             jTabbedPane1.setSelectedComponent(jPanel1);
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
         
@@ -747,4 +778,13 @@ public class Principal extends javax.swing.JFrame {
         }
     }
      
+    public void sair(){
+        JOptionPane.showMessageDialog(null,
+                "Servidor Indisponível. Reinicie a aplicação!",
+                "Atenção",
+                JOptionPane.WARNING_MESSAGE);
+        System.exit(0);
+    }
+    
+    
 }

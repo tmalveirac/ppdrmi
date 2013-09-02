@@ -26,31 +26,20 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     private File pasta;
     
     
-    public Cliente (String login, String nomeServidor, File pasta) throws RemoteException{
-        
-        try {
-            //servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
-            servidor = (InverterItf)Naming.lookup("//"+nomeServidor);
-            System.out.println("Objeto Localizado!");
-            
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Cliente (String login, String nomeServidor, File pasta) throws Exception{
+        //servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
+        servidor = (InverterItf)Naming.lookup("//"+nomeServidor);
+        System.out.println("Objeto Localizado!");
+
+        if (!servidor.existeLogin(login)){
+            Naming.rebind(login,this); 
         }
-       
-        try {
-            if (!servidor.existeLogin(login)){
-                Naming.rebind(login,this); 
-            }
-            else{
-                JOptionPane.showMessageDialog(null,	"Já existe um usuário com este login conectado! Reinicie o programa!",
-					"Atenção", JOptionPane.WARNING_MESSAGE);
-                System.exit(0);
-            }
+        else{
+            JOptionPane.showMessageDialog(null,	"Já existe um usuário com este login conectado! Reinicie o programa!",
+                                    "Atenção", JOptionPane.WARNING_MESSAGE);
+            System.exit(0);
+        }
                              
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
         this.pasta=pasta;
         this.nomeServidor=nomeServidor;
         this.login=login;
@@ -110,7 +99,7 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
             
             return buffer;
     	}catch(IOException e){
-    	    e.printStackTrace();
+    	    //e.printStackTrace();
             return null;
     	}
     }
@@ -128,7 +117,6 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         
         return listaArquivo;
     }
-    
     
     public byte[] downloadArquivoOutroUsuario(String login, String nomeArquivo) throws RemoteException{
         try{

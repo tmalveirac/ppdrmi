@@ -135,10 +135,10 @@ public class Login extends javax.swing.JFrame {
             if (isCampoVazio("Pasta", pasta)) return;
            
             //Obs. o nome do servidor vem sem o //
-            
             //Cria a janela principal, passando o login do usuário, pasta e servidor
             new Principal(login,servidor,jFileChooser.getSelectedFile());
             setVisible(false);
+
         } catch (RemoteException ex) {
             ex.printStackTrace();
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,8 +151,10 @@ public class Login extends javax.swing.JFrame {
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         jFileChooser.showOpenDialog(this);
-        txtPasta.setText(jFileChooser.getSelectedFile().toString());
         
+        if (jFileChooser.getSelectedFile() != null){
+            txtPasta.setText(jFileChooser.getSelectedFile().toString());
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
