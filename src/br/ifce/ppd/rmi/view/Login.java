@@ -53,7 +53,7 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        txtServidor.setText("localhost/InverterRef");
+        txtServidor.setText("localhost/ServidorRef");
 
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
@@ -146,10 +146,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        //jFileChooser = new JFileChooser();
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
         jFileChooser.showOpenDialog(this);
         
         if (jFileChooser.getSelectedFile() != null){
@@ -175,13 +172,9 @@ public class Login extends javax.swing.JFrame {
              return false;
          }           
     }
-    
-    /**
-    * Métdodo principal 
-    *             
-    */  
+     
     public static void main(String args[]) {
-      
+  
         //Código gerado pelo Netbeans
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -199,8 +192,6 @@ public class Login extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
         //Cria e mostra o Form
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

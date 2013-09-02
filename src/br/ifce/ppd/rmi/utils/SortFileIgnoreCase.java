@@ -1,16 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.ifce.ppd.rmi.utils;
+
+/**
+ * Classe: SortFileIgnoreCase.java
+ * Comparador de arquivos baseado em Strings
+ * @author Tiago Malveira
+ * 
+ */
 
 import java.io.File;
 import java.util.Comparator;
 
-/**
- *
- * @author malveira
- */
 public class SortFileIgnoreCase implements Comparator<Object>{
 
     @Override

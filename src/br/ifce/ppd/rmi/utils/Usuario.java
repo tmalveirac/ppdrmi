@@ -1,17 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.ifce.ppd.rmi.utils;
+
+/**
+ * Classe: Usuario.java
+ * Define um usuário da aplicação
+ * @author Tiago Malveira
+ * 
+ */
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- *
- * @author malveira
- */
 public class Usuario implements Serializable{
     private String login;
     private List<File> listaArquivo;
@@ -40,5 +39,4 @@ public class Usuario implements Serializable{
     public void setListaArquivo(List<File> listaArquivo) {
         this.listaArquivo = listaArquivo;
     }
-
 }

@@ -1,13 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.ifce.ppd.rmi.control;
 
 /**
- *
- * @author malveira
+ * Classe: Servidor.java
+ * Implementa o lado servidor da aplicação
+ * @author Tiago Malveira
+ * 
  */
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,15 +19,13 @@ import javax.swing.JOptionPane;
 
 public class Cliente extends UnicastRemoteObject implements ClienteItf {
     
-    private InverterItf servidor;
+    private ServidorItf servidor;
     private String login;
     private String nomeServidor;
     private File pasta;
-    
-    
+        
     public Cliente (String login, String nomeServidor, File pasta) throws Exception{
-        //servidor = (InverterItf)Naming.lookup("//localhost/InverterRef");
-        servidor = (InverterItf)Naming.lookup("//"+nomeServidor);
+        servidor = (ServidorItf)Naming.lookup("//"+nomeServidor);
         System.out.println("Objeto Localizado!");
 
         if (!servidor.existeLogin(login)){
@@ -46,11 +43,11 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         servidor.conectar(login);       
     }
 
-    public InverterItf getServidor() {
+    public ServidorItf getServidor() {
         return servidor;
     }
 
-    public void setServidor(InverterItf servidor) {
+    public void setServidor(ServidorItf servidor) {
         this.servidor = servidor;
     }
 
@@ -77,12 +74,13 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
     public void setPasta(File pasta) {
         this.pasta = pasta;
     }
-    
-    
-    public void desconectar() throws RemoteException{
-        servidor.desconectar(this.login);
-    }
-
+   
+    /**
+    * Faz um download de um arquivo
+    *             
+    * @param    nomeArquivo     nome do arquivo
+    * @return   byte[]          array de bytes do arquivo   
+    */
     @Override
     public byte[] downloadArquivo(String nomeArquivo) throws RemoteException {
         try{
@@ -99,16 +97,20 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
             
             return buffer;
     	}catch(IOException e){
-    	    //e.printStackTrace();
             return null;
     	}
     }
 
+    /**
+    * Lista os arquivos do cliente
+    *             
+    * @return   List<File>  lista de arquivos do cliente   
+    */
     @Override
     public List<File> listarArquivos() throws RemoteException {
-        //File file = new File("/home/malveira/teste/destino");
         List<File> listaArquivo = new ArrayList<File>();
 
+        //Percorre a lista de arquivos do cliente
         for (File f : pasta.listFiles()){
             if (!f.isDirectory()){
                 listaArquivo.add(f);
@@ -118,6 +120,13 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
         return listaArquivo;
     }
     
+    /**
+    * Faz o download de um arquivo de outro usuário
+    *             
+    * @param    login           login do cliente
+    *           nomeArquivo     nome do arquivo
+    * @return   byte[]          array de bytes do arquivo   
+    */
     public byte[] downloadArquivoOutroUsuario(String login, String nomeArquivo) throws RemoteException{
         try{
             String campos[] = this.nomeServidor.split("/"); //Extrair endereço do servidor
@@ -126,7 +135,6 @@ public class Cliente extends UnicastRemoteObject implements ClienteItf {
             return clienteItf.downloadArquivo(nomeArquivo);
             
     	}catch(Exception e){
-    	    e.printStackTrace();
             return null;
     	}
     }

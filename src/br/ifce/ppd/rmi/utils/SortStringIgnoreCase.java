@@ -1,8 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.ifce.ppd.rmi.utils;
+
+/**
+ * Classe: SortStringIgnoreCase.java
+ * Comparador objetos baseado em Strings
+ * @author Tiago Malveira
+ * 
+ */
 
 import java.util.Comparator;
 
